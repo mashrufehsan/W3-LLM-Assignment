@@ -14,15 +14,20 @@ load_dotenv()
 class Command(BaseCommand):
     help = "Interact with the Ollama model phi3"
 
+    def ask_llm(self, prompt):
+        response = ollama.chat(model='phi3', messages=[
+            {
+                'role': 'user',
+                'content': prompt,
+            },
+        ])
+        output = response['message']['content']
+        self.stdout.write(output)
+
     def handle(self, *args, **options):
         try:
-            response = ollama.chat(model='phi3', messages=[
-                {
-                    'role': 'user',
-                    'content': 'give me description of hotel named radisson blue in 10 words',
-                },
-            ])
-            print(response['message']['content'])
+            self.ask_llm(
+                'Give me description of hotel radisson blu in 10 words')
 
         except KeyboardInterrupt:
             self.stdout.write(self.style.ERROR(
