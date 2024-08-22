@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from getpass import getpass
 import psycopg2
-from properties.models import PropertyInfo, Location
+from properties.models import PropertyInfo, Location, PropertySummary
 from dotenv import load_dotenv
 import os
 import ollama
@@ -69,18 +69,30 @@ class Command(BaseCommand):
                     'give description in 2 sentences for ' + result_str)
 
                 generated_title = self.ask_llm(
-                    f'''rewrite the title for {property_info.title}. 
+                    f'''rewrite the title for {property_info.title}.
                     give just 1 title witout any special characters''')
 
                 generated_summary = self.ask_llm(
-                    f'''generate a brief summary for this hotel in plain text without any special characters.
-                    If available, include amenities, location, latitude, longitude. Otherwise don't.
-                    Dont't use any line break. details: + {result_str}''')
+                    f'''Generate a 4-line summary for the hotel described below.
+                    - Include the hotel name.
+                    - Mention the location if available (name, latitude, and longitude).
+                    - Include any amenities if mentioned.
+                    - Avoid special characters or line breaks.
+                    Details: {result_str}''')
 
                 print('Original title:', property_info.title)
                 print('Generated title:', generated_title)
                 print('Geerated description:', generated_description)
                 print('Genarated summary:', generated_summary)
+
+                property_info.title = generated_title
+                property_info.description = generated_description
+                property_info.save()
+
+                PropertySummary.objects.create(
+                    property_info=property_info,
+                    summary=generated_summary
+                )
 
             else:
                 self.stdout.write(self.style.ERROR(
