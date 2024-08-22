@@ -1,15 +1,15 @@
 
-# Property Information Management Django Application #
+# Property Information rewriter and summary generator Django Application #
 
-This Django application is designed to store and manage property information using the Django admin interface. It includes models for properties, images, locations, and amenities. The application uses PostgreSQL as the database and enables CRUD operations for all models while maintaining their relationships. Additionally, it provides a CLI application to migrate data from a Scrapy project database to Django.
+This project is a Django-based Command Line Interface (CLI) application that rewrites property titles and descriptions using an Ollama model and stores the updated information in a PostgreSQL database. Additionally, it generates summaries of the property information and saves them in a separate table.
 
 
 ## Features ##
-
-- **Django Admin Interface:** Manage property information with proper authentication.
-- **PostgreSQL Database:** Use PostgreSQL for data storage.
-- **Django ORM:** Use Django ORM for database interactions.
-- **Data Migration:** CLI tool to migrate data from a Scrapy project database.
+- **Django CLI Integration**: All operations are performed through a command-line interface, leveraging Django's management commands.
+- **Ollama Model Integration**: Utilizes a model from Ollama for rewriting content and generating summaries.
+- **PostgreSQL Database**: Stores rewritten property titles, descriptions, and generated summaries using Django ORM.
+- **Summary Generation**: Automatically generates and stores property summaries in a separate table.
+- **Django Admin Interface:** Manage property summary with proper authentication.
 
 ## Index ##
 - 👉 [Installation](#Installation "Go to: Installation")
@@ -20,15 +20,18 @@ This Django application is designed to store and manage property information usi
 ## Installation ##
 
 ### Prerequisites ###
-- Python
-- PostgreSQL
+1. Python
+2. Django
+3. PostgreSQL
+4. Ollama model setup ( PLease refer to [Ollama documentation](https://github.com/ollama/ollama/tree/main))
+5. Git
 
 ### Steps ###
 
 1. **Clone and navigate to the the Repository.**
     ```bash
-    git clone https://github.com/mashrufehsan/W3-Django-Assignment.git
-    cd W3-Django-Assignment
+    git clone https://github.com/mashrufehsan/W3-LLM-Assignment.git
+    cd W3-LLM-Assignment
     ```
 2. **Create and Activate Virtual Environment.**
     ```bash
@@ -39,15 +42,9 @@ This Django application is designed to store and manage property information usi
     ```bash
     pip install -r requirements.txt
     ```
-4. **Set up the database.**
+4. **Configure environment variables.**
 
-    Create a PostgreSQL database. You can do this using the psql command-line tool or a PostgreSQL client.
-    ```bash
-    CREATE DATABASE property_db;
-    ```
-5. **Configure environment variables.**
-
-    Copy the .env.sample file to .env and fill in the required database configuration.
+    Copy the .env.sample file to .env and fill in the required configuration.
     - On macOS/Linux:
         ```bash
         cp .env.sample .env
@@ -56,73 +53,32 @@ This Django application is designed to store and manage property information usi
         ```bash
         copy .env.sample .env
         ```
-    Update the .env file with your PostgreSQL database credentials.
-6. **Run Migrations**
+    
+    Update the `.env` file with your PostgreSQL database credentials and specify the Ollama model of your choice.
+
+5. **Run Migrations**
     ```bash
     python manage.py makemigrations
     python manage.py migrate
     ```
-7. **Create Superuser**
+6. **Start the CLI application**
     ```bash
-    python manage.py createsuperuser
+    python manage.py generate_summary
     ```
-8. **Run the Development Server**
-    ```bash
-    python manage.py runserver
-    ```
+Upon running the application, you will be prompted to enter the superuser admin `username` and `password`.
+
+Once authenticated, the application will rewrite property titles and descriptions, generate summaries from the available data, and store the summaries in a separate table.
 
 ## Admin Interface ##
 Once the server is running, the Djnago admin interface can be accessed at:
 > http://localhost:8000/admin
 
-## Using the CLI application ##
-This CLI application imports `title`, `location`, `latitude`, `longitude` and `image` for each hotel into the Django databse.
-
-1. **Configure environment variables.**
-
-    Make sure to set "IMPORT_IMAGES_FOLDER_PATH" to allow the CLI application to function properly.
-    
-    To get the path of a directory:
-    
-    - Navigate to the directory.
-    - Open the terminal.
-    - Type the following command:
-        - On macOS/Linux:
-            ```bash
-            pwd
-            ```
-        - On Windows:
-            ```bash
-            cd
-            ```
-            Alternatively, you can copy the path directly from the File Explorer address bar.
-
-    **Example:**
-
-    If the path of an image in the Scrapy database is:
-    ```
-    /home/user/Desktop/ScrapyProject/images/hotel_1.png
-    ```
-    Then set `IMPORT_IMAGES_FOLDER_PATH` as:
-    ```
-    IMPORT_IMAGES_FOLDER_PATH=/home/user/Desktop/ScrapyProject/
-    ```
-2. **Start the CLI application**
-    ```bash
-    python manage.py import_data
-    ```
-Upon running the application, you will be prompted to enter the superuser admin `username` and `password`.
-
-If authenticated successfully, a list of table names from the database will appear, such as:
-1. paris
-2. lijiang
-
-Type the corresponding number to select the table. For example, type `1` to select the `paris` table. The application will then import all the data from the selected table into the Django database.
 
 ## Models
+This CLI application generates a property_summary table, delivering an insightful summary of property data.
 
-### PropertyInfo
-Represents a property with detailed information and relationships to other models.
+### PropertySummary
+Represents a summary of a property with a relationship to the PropertyInfo model.
 
 - **title**: `CharField` - Title of the property.
 - **description**: `TextField` - Detailed description of the property (nullable).

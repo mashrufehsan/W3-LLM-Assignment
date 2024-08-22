@@ -15,7 +15,7 @@ class Command(BaseCommand):
     help = "Interact with the Ollama model gemma2:2b"
 
     def ask_llm(self, prompt):
-        response = ollama.chat(model='gemma2:2b', messages=[
+        response = ollama.chat(model=os.getenv('MODEL'), messages=[
             {
                 'role': 'user',
                 'content': prompt,
