@@ -12,7 +12,7 @@ load_dotenv()
 
 
 class Command(BaseCommand):
-    help = "Interact with the Ollama model phi3"
+    help = "Interact with the Ollama model gemma2:2b"
 
     def ask_llm(self, prompt):
         response = ollama.chat(model='gemma2:2b', messages=[
@@ -32,11 +32,14 @@ class Command(BaseCommand):
             password = getpass("Enter superadmin password: ")
             user = authenticate(username=username, password=password)
             if user is not None and user.is_superuser:
-                self.stdout.write(self.style.SUCCESS('\nAdmin login success!'))
+                self.stdout.write(self.style.SUCCESS(
+                    '\nAdmin login success!\n'))
                 db_config = settings.DATABASES['default']
 
-                property_info = PropertyInfo.objects.first()
-                if property_info:
+                # Fetch all PropertyInfo objects
+                property_infos = PropertyInfo.objects.all()
+
+                for property_info in property_infos:
                     title = property_info.title
                     locations = property_info.locations.all()
                     if locations.exists():
@@ -61,38 +64,50 @@ class Command(BaseCommand):
                     if amenity_names != "":
                         result_str += f" Amenities: {amenity_names}"
 
-                    self.stdout.write(result_str)
-                else:
-                    self.stdout.write("No properties found.")
+                    self.stdout.write(self.style.WARNING(
+                        f"Generating Title, Description and Summary for {property_info.title.rstrip()}.\nPlease wait..."))
 
-                generated_description = self.ask_llm(
-                    'give description in 2 sentences for ' + result_str)
+                    generated_description = self.ask_llm(
+                        'give description in 2 sentences for ' + result_str)
 
-                generated_title = self.ask_llm(
-                    f'''rewrite the title for {property_info.title}.
-                    give just 1 title witout any special characters''')
+                    self.stdout.write(self.style.SUCCESS(
+                        'Description generated'))
 
-                generated_summary = self.ask_llm(
-                    f'''Generate a 4-line summary for the hotel described below.
-                    - Include the hotel name.
-                    - Mention the location if available (name, latitude, and longitude).
-                    - Include any amenities if mentioned.
-                    - Avoid special characters or line breaks.
-                    Details: {result_str}''')
+                    generated_title = self.ask_llm(
+                        f'''rewrite the title for {property_info.title}.
+                        give just 1 title witout any special characters''')
+                    self.stdout.write(self.style.SUCCESS('Title generated'))
 
-                print('Original title:', property_info.title)
-                print('Generated title:', generated_title)
-                print('Geerated description:', generated_description)
-                print('Genarated summary:', generated_summary)
+                    generated_summary = self.ask_llm(
+                        f'''Generate a 4-line summary for the hotel described below.
+                        - Include the hotel name.
+                        - Mention the location if available (name, latitude, and longitude).
+                        - Include any amenities if mentioned.
+                        - Avoid special characters or line breaks.
+                        Details: {result_str}''')
 
-                property_info.title = generated_title
-                property_info.description = generated_description
-                property_info.save()
+                    self.stdout.write(self.style.SUCCESS('Summary generated.'))
+                    self.stdout.write(self.style.WARNING(
+                        'Saving to database...'))
 
-                PropertySummary.objects.create(
-                    property_info=property_info,
-                    summary=generated_summary
-                )
+                    property_info.title = generated_title
+                    property_info.description = generated_description
+                    property_info.save()
+
+                    summary, created = PropertySummary.objects.get_or_create(
+                        property_info=property_info
+                    )
+
+                    if created:
+                        # New summary created
+                        summary.summary = generated_summary
+                        summary.save(update_fields=['summary'])
+                    else:
+                        # Existing summary found, update it
+                        summary.summary = generated_summary
+                        summary.save()
+
+                    self.stdout.write(self.style.SUCCESS('Saved!\n'))
 
             else:
                 self.stdout.write(self.style.ERROR(
