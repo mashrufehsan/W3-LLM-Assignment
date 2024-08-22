@@ -67,16 +67,25 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(
                         f"Generating Title, Description and Summary for {property_info.title.rstrip()}.\nPlease wait..."))
 
+                    self.stdout.write(self.style.WARNING(
+                        'Generating description... '))
+
                     generated_description = self.ask_llm(
                         'give description in 2 sentences for ' + result_str)
 
-                    self.stdout.write(self.style.SUCCESS(
-                        'Description generated'))
+                    self.stdout.write(self.style.SUCCESS('Generated!'))
+
+                    self.stdout.write(
+                        self.style.WARNING('Generating title... '))
 
                     generated_title = self.ask_llm(
                         f'''rewrite the title for {property_info.title}.
                         give just 1 title witout any special characters''')
-                    self.stdout.write(self.style.SUCCESS('Title generated'))
+
+                    self.stdout.write(self.style.SUCCESS('Generated!'))
+
+                    self.stdout.write(
+                        self.style.WARNING('Generating summary... '))
 
                     generated_summary = self.ask_llm(
                         f'''Generate a 4-line summary for the hotel described below.
@@ -86,7 +95,8 @@ class Command(BaseCommand):
                         - Avoid special characters or line breaks.
                         Details: {result_str}''')
 
-                    self.stdout.write(self.style.SUCCESS('Summary generated.'))
+                    self.stdout.write(self.style.SUCCESS('Generated!'))
+
                     self.stdout.write(self.style.WARNING(
                         'Saving to database...'))
 
