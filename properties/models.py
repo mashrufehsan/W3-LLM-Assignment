@@ -103,3 +103,16 @@ def delete_image_file(sender, instance, **kwargs):
     if instance.img_path:
         if os.path.isfile(instance.img_path.path):
             os.remove(instance.img_path.path)
+
+
+class PropertySummary(create_update_date, models.Model):
+    property_info = models.ForeignKey(
+        PropertyInfo, related_name='summaries', on_delete=models.CASCADE)
+    summary = models.TextField()
+
+    def __str__(self):
+        return f"Summary for {self.property_info.title}"
+
+    class Meta:
+        db_table = 'property_summary'
+        verbose_name_plural = 'Property Summaries'
