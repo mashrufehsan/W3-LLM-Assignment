@@ -79,7 +79,16 @@ This project is a Django-based Command Line Interface (CLI) application that rew
     ```bash
     python manage.py generate_summary
     ```
+
+### ! Important ###
 Upon running the application, you will be prompted to enter the superuser admin `username` and `password`.
+
+You can use the previous Django project's superadmin `username` and `password`.
+
+Otherwise, create a new superadmin before starting the CLI application:
+```bash
+python manage.py createsuperuser
+```
 
 Once authenticated, the application will rewrite property titles and descriptions, generate summaries from the available data, and store the summaries in a separate table.
 
