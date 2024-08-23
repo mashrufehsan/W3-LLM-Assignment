@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from getpass import getpass
 import psycopg2
-from properties.models import PropertyInfo, Location, PropertySummary
+from properties.models import PropertyInfo, PropertySummary
 from dotenv import load_dotenv
 import os
 import ollama
