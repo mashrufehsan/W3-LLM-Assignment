@@ -13,9 +13,10 @@ This project is a Django-based Command Line Interface (CLI) application that rew
 
 ## Index ##
 - 👉 [Installation](#Installation "Go to: Installation")
-- 👉 [Admin Interface](#Admin-Interface "Go to: Admin Interface")
-- 👉 [Using the CLI application](#Using-the-CLI-application "Go to: Using the CLI application")
 - 👉 [Models](#Models "Go to: Models")
+- 👉 [Admin Interface](#Admin-Interface "Go to: Admin Interface")
+- 👉 [Notes](#Notes "Go to: Using the CLI application")
+
 
 ## Installation ##
 
@@ -23,7 +24,7 @@ This project is a Django-based Command Line Interface (CLI) application that rew
 1. Python
 2. Django
 3. PostgreSQL
-4. Ollama model setup ( PLease refer to [Ollama documentation](https://github.com/ollama/ollama/tree/main))
+4. Ollama model setup (PLease refer to [Ollama documentation](https://github.com/ollama/ollama/tree/main))
 5. Git
 
 ### Steps ###
@@ -53,7 +54,10 @@ This project is a Django-based Command Line Interface (CLI) application that rew
         ```bash
         copy .env.sample .env
         ```
-    
+    Run the following command to view all the available Ollama models available on your machine.
+    ```bash
+    ollama list
+    ```
     Update the `.env` file with your PostgreSQL database credentials and specify the Ollama model of your choice.
 
 5. **Run Migrations**
@@ -69,70 +73,30 @@ Upon running the application, you will be prompted to enter the superuser admin 
 
 Once authenticated, the application will rewrite property titles and descriptions, generate summaries from the available data, and store the summaries in a separate table.
 
+## Models ##
+This CLI application generates a `property_summary` table, delivering an insightful summary of property data.
+
+### PropertySummary ###
+Represents a summary of a property with a relationship to the `PropertyInfo` model.
+
+- **property_info**: `ForeignKey` - A relationship to the `PropertyInfo` model, representing the property to which this summary is linked.
+- **summary**: `TextField` - A Detailed text field containing the summary of the property.
+
+**Meta Options:**
+- `db_table`: 'property_summary'
+- `verbose_name_plural`: 'Property Summaries'
+
+
 ## Admin Interface ##
-Once the server is running, the Djnago admin interface can be accessed at:
-> http://localhost:8000/admin
+This project also offers an admin panel to view the data of newly generated `property_summary` table.
+
+To access the admin panel start the server on a different port:
+```bash
+python manage.py runserver 8001
+```
+Once the server is running the admin panel for `property_summary` can be accessed at:
+> http://localhost:8001/admin
 
 
-## Models
-This CLI application generates a property_summary table, delivering an insightful summary of property data.
-
-### PropertySummary
-Represents a summary of a property with a relationship to the PropertyInfo model.
-
-- **title**: `CharField` - Title of the property.
-- **description**: `TextField` - Detailed description of the property (nullable).
-- **locations**: `ManyToManyField` - Relationship to the `Location` model, representing a many-to-many relationship.
-- **amenities**: `ManyToManyField` - Relationship to the `Amenity` model, representing a many-to-many relationship.
-- **created_date**: `DateTimeField` - Timestamp of when the property was created.
-- **updated_date**: `DateTimeField` - Timestamp of when the property was last updated.
-
-**Meta Options:**
-- `db_table`: 'property_info'.
-- `verbose_name_plural`: 'Property Info'.
-
-### Image
-Represents an image associated with a property.
-
-- **property_info**: `ForeignKey` - Relationship to the `PropertyInfo` model.
-- **img_path**: `ImageField` - Path to the image file, with a custom filename generator.
-- **created_date**: `DateTimeField` - Timestamp of when the image was uploaded.
-- **updated_date**: `DateTimeField` - Timestamp of when the image was last updated.
-
-**Meta Options:**
-- `db_table`: 'image'.
-- `verbose_name_plural`: 'Images'.
-
-**Additional Functionality:**
-- **delete**: Custom delete method to remove the image file from the filesystem when the image object is deleted.
-- **pre_delete Signal**: Signal to remove the image file from the filesystem when the image object is deleted.
-
-### Location
-Represents a geographical location with different types (country, state, city).
-
-- **name**: `CharField` - Name of the location.
-- **type**: `CharField` - Type of the location (choices: Country, State, City).
-- **latitude**: `DecimalField` - Latitude coordinate of the location (nullable).
-- **longitude**: `DecimalField` - Longitude coordinate of the location (nullable).
-- **created_date**: `DateTimeField` - Timestamp of when the location was created.
-- **updated_date**: `DateTimeField` - Timestamp of when the location was last updated.
-
-**Meta Options:**
-- `unique_together`: Ensures a unique combination of name and type.
-- `db_table`: 'location'.
-- `verbose_name_plural`: 'Locations'.
-
-### Amenity
-Represents an amenity that can be associated with a property.
-
-- **name**: `CharField` - Name of the amenity (unique).
-- **created_date**: `DateTimeField` - Timestamp of when the amenity was created.
-- **updated_date**: `DateTimeField` - Timestamp of when the amenity was last updated.
-
-**Meta Options:**
-- `db_table`: 'amenity'.
-- `verbose_name_plural`: 'Amenities'.
-
-## Notes
-
-- Ensure PostgreSQL is running and accessible with the credentials provided in the .env file.
+## Notes ##
+- Ensure PostgreSQL and Ollama are running and accessible with the credentials provided in the .env file.
