@@ -88,13 +88,13 @@ Represents a summary of a property with a relationship to the `PropertyInfo` mod
 
 
 ## Admin Interface ##
-This project also offers an admin panel to view the data of newly generated `property_summary` table.
+This project also offers an admin panel to view data of the newly generated `property_summary` table.
 
-To access the admin panel start the server on a different port:
+To access the admin panel, start the server on a different port:
 ```bash
 python manage.py runserver 8001
 ```
-Once the server is running the admin panel for `property_summary` can be accessed at:
+Once the server is running, the admin panel for `property_summary` can be accessed at:
 > http://localhost:8001/admin
 
 
