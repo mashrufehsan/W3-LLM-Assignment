@@ -30,21 +30,30 @@ This project is a Django-based Command Line Interface (CLI) application that rew
 
 ### Steps ###
 
-1. **Clone and navigate to the the Repository.**
+1. **[Download](https://ollama.com/download) and install Ollama.**
+
+2. **Choose a [model](https://ollama.com/library).**
+
+3. **Download the model:**
+    ```bash
+    ollama pull <model_name>
+    ```
+
+4. **Clone and navigate to the the Repository.**
     ```bash
     git clone https://github.com/mashrufehsan/W3-LLM-Assignment.git
     cd W3-LLM-Assignment
     ```
-2. **Create and Activate Virtual Environment.**
+5. **Create and Activate Virtual Environment.**
     ```bash
     python -m venv venv
     source venv/bin/activate   # On Windows, use `venv\Scripts\activate`
     ```
-3. **Install Dependencies.**
+6. **Install Dependencies.**
     ```bash
     pip install -r requirements.txt
     ```
-4. **Configure environment variables.**
+7. **Configure environment variables.**
 
     Copy the .env.sample file to .env and fill in the required configuration.
     - On macOS/Linux:
@@ -61,12 +70,12 @@ This project is a Django-based Command Line Interface (CLI) application that rew
     ```
     Update the `.env` file with your PostgreSQL database credentials and specify the Ollama model of your choice.
 
-5. **Run Migrations**
+8. **Run Migrations**
     ```bash
     python manage.py makemigrations
     python manage.py migrate
     ```
-6. **Start the CLI application**
+9. **Start the CLI application**
     ```bash
     python manage.py generate_summary
     ```
