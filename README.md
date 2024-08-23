@@ -24,8 +24,9 @@ This project is a Django-based Command Line Interface (CLI) application that rew
 1. Python
 2. Django
 3. PostgreSQL
-4. Ollama model setup (PLease refer to [Ollama documentation](https://github.com/ollama/ollama/tree/main))
-5. Git
+4. Git
+5. Ollama model setup (PLease refer to [Ollama documentation](https://github.com/ollama/ollama/tree/main))
+
 
 ### Steps ###
 
